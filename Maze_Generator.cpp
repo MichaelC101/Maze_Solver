@@ -160,6 +160,7 @@ void dijkstra(vector<unordered_set<int>>& adjList,int src, int end){
     while (!notComputed.empty()){
         //need the smallest index that hasnt been visited yet
         vector<int> temp = d;
+        //if it has been visited I make it big so it def wont be the smallest
         for(auto it = computed.begin(); it != computed.end(); ++it){
             temp[*it] = 999999999;
         }
@@ -185,7 +186,8 @@ void dijkstra(vector<unordered_set<int>>& adjList,int src, int end){
     cout << "Finding " << end << " from " << src << " using DIJSKTRA took "
     << duration.count() << " Im not sure of time units" << endl;
     cout << "The distance from " << src << " to " << end << " is " << d[end] << endl;
-    cout << "Best path from " << src << " to " << end << ": ";
+    cout << "Path dijkstra took from " << src << " to " << end << ": ";
+    // create a vector of the path
     int x = 999;
     int y = end;
     vector <int> v;
@@ -209,6 +211,8 @@ void DFS(vector<unordered_set<int>>& adjList,int src, int end){
     stack<int> stack;
     visited.emplace(src);
     stack.push(src);
+    //created path to keep track of all verticies DFS visisted
+    //note path keeps track of all verticies visited, not just those in the "best path"
     vector<int> path;
 
     while (!stack.empty()){
@@ -216,7 +220,6 @@ void DFS(vector<unordered_set<int>>& adjList,int src, int end){
         if (x == end){
             break;
         }
-        //cout << x << " ";
         path.push_back(x);
         stack.pop();
         vector<int> neighbors;
@@ -236,7 +239,7 @@ void DFS(vector<unordered_set<int>>& adjList,int src, int end){
     cout << "Finding " << end << " from " << src << " using DFS took "
     << duration.count() << " Im not sure time unit" << endl;
     cout << "The distance from " << src << " to " << end << " is " << path.size() << endl;
-    cout << "Best path from " << src << " to " << end << ": ";
+    cout << "Path DFS took from " << src << " to " << end << ": ";
     for (int i = 0; i < path.size(); i++){
         cout << path[i] << "-> ";
     }
