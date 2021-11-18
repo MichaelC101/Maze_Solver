@@ -9,6 +9,9 @@ using namespace std;
 vector<unordered_set<int>> generateGraph(int H, int W);
 vector<vector<bool>> graphToMaze(vector<unordered_set<int>>& adjList, int H, int W);
 void printMaze(vector<vector<bool>>& matrix);
+void dijkstra(vector<unordered_set<int>>& adjList,int src, int end);
+void DFS(vector<unordered_set<int>>& adjList,int src, int end);
+void printList(vector<unordered_set<int>>& adjList);
 
 // Program Driver
 int main()
@@ -118,6 +121,126 @@ vector<vector<bool>> graphToMaze(vector<unordered_set<int>>& adjList, int H, int
     matrix[1][0] = true;
     matrix[H * 2 - 1][W * 2] = true;
     return matrix;
+}
+
+void printList(vector<unordered_set<int>>& adjList){
+    for (int i = 0; i < adjList.size(); i++){
+        if(!adjList[i].empty()){
+            cout << i << " -> ";
+            for (auto it = adjList[i].begin(); it != adjList[i].end(); ++it){
+                cout << *it << " ";
+            }
+            cout << endl;
+        }
+    }
+}
+// does dijkstra stuff
+void dijkstra(vector<unordered_set<int>>& adjList,int src, int end){
+    auto start =  chrono::high_resolution_clock::now();
+    unordered_set<int> computed;
+    unordered_set<int> notComputed;
+    computed.emplace(src);
+    //filling notComputed with all verticies except src
+    for (int i = 0; i < adjList.size(); i++){
+        if(computed.count(i) != 1){
+            notComputed.emplace(i);
+        }
+    }
+    // distance to each verticy
+    vector<int> d (adjList.size(), 99999);
+    d[src] = 0;
+    // keeps track of predecessor
+    vector<int> p (adjList.size(), -1);
+
+    for (auto it = adjList[src].begin(); it != adjList[src].end(); ++it){
+        d[*it] = 1;
+        p[*it] = src;
+    }
+
+    while (!notComputed.empty()){
+        //need the smallest index that hasnt been visited yet
+        vector<int> temp = d;
+        for(auto it = computed.begin(); it != computed.end(); ++it){
+            temp[*it] = 999999999;
+        }
+
+        int minIndex = std::min_element(temp.begin(),temp.end()) - temp.begin();
+        computed.emplace(minIndex);
+        notComputed.erase(minIndex);
+
+        for (auto it = adjList[minIndex].begin(); it != adjList[minIndex].end(); ++it){
+            if (notComputed.count(*it) != 0){
+                if(d[minIndex] + 1 < d[*it]){
+                    d[*it] = d[minIndex] + 1;
+                    p[*it] = minIndex;
+                }
+            }
+        }
+
+    }
+    auto stopTime =  chrono::high_resolution_clock::now();
+    chrono::duration<float> duration = stopTime - start;
+    cout << endl;
+    cout << "Using DIJKSTRA" << endl;
+    cout << "Finding " << end << " from " << src << " using DIJSKTRA took "
+    << duration.count() << " Im not sure of time units" << endl;
+    cout << "The distance from " << src << " to " << end << " is " << d[end] << endl;
+    cout << "Best path from " << src << " to " << end << ": ";
+    int x = 999;
+    int y = end;
+    vector <int> v;
+    while (x != src){
+         x = p[y];
+         v.push_back(x);
+         y = x;
+    }
+    for (int i = v.size() - 1; i >= 0; i--){
+        cout << v[i] << " -> ";
+    }
+    cout << end << endl;
+    cout << endl;
+
+}
+
+//DFS stuff 
+void DFS(vector<unordered_set<int>>& adjList,int src, int end){
+    auto start =  chrono::high_resolution_clock::now();
+    unordered_set<int> visited;
+    stack<int> stack;
+    visited.emplace(src);
+    stack.push(src);
+    vector<int> path;
+
+    while (!stack.empty()){
+        int x = stack.top();
+        if (x == end){
+            break;
+        }
+        //cout << x << " ";
+        path.push_back(x);
+        stack.pop();
+        vector<int> neighbors;
+        for (auto it = adjList[x].begin(); it != adjList[x].end(); ++it){
+            neighbors.push_back(*it);
+        }
+        for (int v : neighbors){
+            if (visited.count(v) == 0){
+                visited.insert(v);
+                stack.push(v);
+            }
+        }
+    }
+    auto stopTime =  chrono::high_resolution_clock::now();
+    chrono::duration<float> duration = stopTime - start;
+    cout << "Using Depth First Search" << endl;
+    cout << "Finding " << end << " from " << src << " using DFS took "
+    << duration.count() << " Im not sure time unit" << endl;
+    cout << "The distance from " << src << " to " << end << " is " << path.size() << endl;
+    cout << "Best path from " << src << " to " << end << ": ";
+    for (int i = 0; i < path.size(); i++){
+        cout << path[i] << "-> ";
+    }
+    cout << end;
 }
 
 // Convenient way to view a bool matrix maze without external libraries
