@@ -12,7 +12,7 @@ void printMaze(vector<vector<bool>>& matrix);
 void dijkstra(vector<unordered_set<int>>& adjList,int src, int end);
 void DFS(vector<unordered_set<int>>& adjList,int src, int end);
 void printList(vector<unordered_set<int>>& adjList);
-
+void BFS(vector<unordered_set<int>>& adjList,int src, int end);
 // Program Driver
 int main()
 {
@@ -235,6 +235,48 @@ void DFS(vector<unordered_set<int>>& adjList,int src, int end){
     cout << "Using Depth First Search" << endl;
     cout << "Finding " << end << " from " << src << " using DFS took "
     << duration.count() << " Im not sure time unit" << endl;
+    cout << "The distance from " << src << " to " << end << " is " << path.size() << endl;
+    cout << "Best path from " << src << " to " << end << ": ";
+    for (int i = 0; i < path.size(); i++){
+        cout << path[i] << "-> ";
+    }
+    cout << end;
+}
+
+//BFS search
+void BFS(vector<unordered_set<int>>& adjList,int src, int end){
+    auto start =  chrono::high_resolution_clock::now();
+    unordered_set<int> visited;
+    queue<int> queue;
+    visited.emplace(src);
+    queue.push(src);
+    vector<int> path;
+
+    while (!queue.empty()){
+        int x = queue.front();
+        if (x == end){
+            break;
+        }
+        path.push_back(x);
+        queue.pop();
+        vector<int> neighbors;
+        for (auto it = adjList[x].begin(); it != adjList[x].end(); ++it){
+            neighbors.push_back(*it);
+        }
+        for (int v : neighbors){
+            if (visited.count(v) == 0){
+                visited.insert(v);
+                queue.push(v);
+            }
+        }
+    }
+    auto stopTime =  chrono::high_resolution_clock::now();
+    chrono::duration<float> duration = stopTime - start;
+    cout << endl;
+    cout << endl;
+    cout << "Using Breadth First Search" << endl;
+    cout << "Finding " << end << " from " << src << " using BFS took "
+         << duration.count() << " Im not sure time unit" << endl;
     cout << "The distance from " << src << " to " << end << " is " << path.size() << endl;
     cout << "Best path from " << src << " to " << end << ": ";
     for (int i = 0; i < path.size(); i++){
