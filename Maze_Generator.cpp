@@ -15,6 +15,7 @@ vector<unordered_set<int>> generateGraph(int H, int W);
 vector<vector<bool>> graphToMaze(vector<unordered_set<int>>& adjList, int H, int W);
 void printMaze(vector<vector<bool>>& matrix);
 void dijkstra(vector<unordered_set<int>>& adjList, int src, int end);
+void bellmanFord(vector<unordered_set<int>>& adjList, int src, int end);
 void DFS(vector<unordered_set<int>>& adjList, int src, int end);
 void printList(vector<unordered_set<int>>& adjList);
 void BFS(vector<unordered_set<int>>& adjList, int src, int end);
@@ -251,6 +252,48 @@ void dijkstra(vector<unordered_set<int>>& adjList, int src, int end) {
 	cout << endl;
 
 }
+//bellmanFord
+void bellmanFord(vector<unordered_set<int>>& adjList, int src, int end){
+    auto start =  chrono::high_resolution_clock::now();
+    vector<int> d(adjList.size(), 9999999);
+    vector<int> p(adjList.size(), -1);
+    d[src] = 0;
+    p[src] = 0;
+    for (int j = 0; j < adjList.size() - 1; j++) {
+        for (int i = 0; i < adjList.size(); i++) {
+            for (auto it = adjList[i].begin(); it != adjList[i].end(); ++it) {
+                if (d[*it] > d[i] + 1) {
+                    d[*it] = d[i] + 1;
+                    p[*it] = i;
+                }
+            }
+        }
+    }
+    auto stopTime =  chrono::high_resolution_clock::now();
+    chrono::duration<float> duration = stopTime - start;
+    cout << endl;
+    cout << endl;
+    cout << "Using Bellman-Ford" << endl;
+    cout << "Finding " << end << " from " << src << " using Bellman-Ford took "
+         << duration.count() << " seconds" << endl;
+    cout << "Verticies visited " << d[end] << endl;
+    cout << "Best path from " << src << " to " << end << ": ";
+    int x = 999;
+    int y = end;
+    vector <int> v;
+    while (x != src){
+        x = p[y];
+        v.push_back(x);
+        y = x;
+    }
+    for (int i = v.size() - 1; i >= 0; i--){
+        cout << v[i] << " -> ";
+    }
+    cout << end << endl;
+    cout << endl;
+
+}
+
 
 //DFS stuff 
 void DFS(vector<unordered_set<int>>& adjList, int src, int end) {
