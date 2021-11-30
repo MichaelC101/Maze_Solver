@@ -1,5 +1,9 @@
 #include "Board.h"
 #include "TextureManager.h"
+#include <thread>
+#include <chrono>
+#include <queue>
+using namespace std;
 
 Board::Board()
 {
@@ -59,11 +63,13 @@ void Board::addTile(Tile& tile, int y , int x)
 	tiles[x][y] = tile;
 }
 
-void Board::leftClick(sf::Vector2i mousePos)
+void Board::leftClick(sf::Vector2i mousePos, sf::RenderWindow& window, vector<unordered_set<int>>& adjList, int src, int end)
 {
 
 	auto BFSbuttonBounds = BFSbutton.getGlobalBounds();
+	auto DFSbuttonBounds = DFSbutton.getGlobalBounds();
 	auto DjikstraButtonBounds = DjikstraButton.getGlobalBounds();
+	auto BellmanFordButtonBounds = BellmanFordButton.getGlobalBounds();
 	auto resetButtonBounds = resetButton.getGlobalBounds();
 	auto timeButtonBounds = timeButton.getGlobalBounds();
 
@@ -74,20 +80,96 @@ void Board::leftClick(sf::Vector2i mousePos)
 	if (BFSbuttonBounds.contains(mousePos.x, mousePos.y))
 	{
 		//Start the BFS visualization
+		runBFS(adjList, src, end, window);
+	}
+	if (DFSbuttonBounds.contains(mousePos.x, mousePos.y))
+	{
+		//Start the DFS visualization
 	}
 	if (DjikstraButtonBounds.contains(mousePos.x, mousePos.y))
 	{
 		//Start the Djikstra visualization
 	}
+	if (BellmanFordButtonBounds.contains(mousePos.x, mousePos.y))
+	{
+		//Start the Bellman-Ford visualization
+	}
+
 	if (timeButtonBounds.contains(mousePos.x, mousePos.y))
 	{
 		
 	}
 }
 
+void Board::runBFS(vector<unordered_set<int>>& adjList, int src, int end, sf::RenderWindow& window)
+{
+	auto start = chrono::high_resolution_clock::now();
+	unordered_set<int> visited;
+	queue<int> queue;
+	visited.emplace(src);
+	queue.push(src);
+	vector<int> path;
+
+	while (!queue.empty()) {
+		int x = queue.front();
+		if (x == end) {
+			break;
+		}
+		path.push_back(x);
+
+		//Code for visualizing the popped tile
+		int front = queue.front();
+		queue.pop();
+		int yVal = front / 35 * 2 + 1;
+		int xVal = front % 35 * 2 + 1;
+		tiles[yVal][xVal].makeCrossed(true);
+		Draw(window);
+		window.display();
+		this_thread::sleep_for(std::chrono::milliseconds(20));
+
+
+		vector<int> neighbors;
+		for (auto it = adjList[x].begin(); it != adjList[x].end(); ++it) {
+			neighbors.push_back(*it);
+		}
+		for (int v : neighbors) {
+			if (visited.count(v) == 0) {
+				visited.insert(v);
+				queue.push(v);
+			}
+		}
+	}
+	/*auto stopTime = chrono::high_resolution_clock::now();
+	chrono::duration<float> duration = stopTime - start;
+	cout << endl;
+	cout << endl;
+	cout << "Using Breadth First Search" << endl;
+	cout << "Finding " << end << " from " << src << " using BFS took "
+		<< duration.count() << " Im not sure time unit" << endl;
+	cout << "The distance from " << src << " to " << end << " is " << path.size() << endl;
+	cout << "Best path from " << src << " to " << end << ": ";*/
+	for (int i = 0; i < path.size(); i++) {
+		cout << path[i] << "-> ";
+	}
+	cout << end;
+}
+
+
 
 void Board::resetGame()
 {
+	for (int i = 0; i < 51; i++)
+	{
+		for (int j = 0; j < 71; j++)
+			tiles[i][j].makeCrossed(false);
+	}
 }
+
+
+
+
+
+
+
 
 
