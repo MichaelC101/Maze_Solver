@@ -305,9 +305,9 @@ void DFS(vector<unordered_set<int>>& adjList, int src, int end) {
 
 	while (!stack.empty()) {
 		int x = stack.top();
-		if (x == end) {
-			break;
-		}
+// 		if (x == end) {
+// 			break;
+// 		}
 		//cout << x << " ";
 		path.push_back(x);
 		stack.pop();
@@ -346,9 +346,9 @@ void BFS(vector<unordered_set<int>>& adjList, int src, int end) {
 
 	while (!queue.empty()) {
 		int x = queue.front();
-		if (x == end) {
-			break;
-		}
+// 		if (x == end) {
+// 			break;
+// 		}
 		path.push_back(x);
 		queue.pop();
 		vector<int> neighbors;
