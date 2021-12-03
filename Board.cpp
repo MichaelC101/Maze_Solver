@@ -40,6 +40,15 @@ void Board::Draw(sf::RenderWindow& window)
 	}
 }
 
+void Board::reDraw(sf::RenderWindow& window, int x, int y)
+{
+	tiles[y][x].Draw(window);
+	tiles[y + 1][x].Draw(window);
+	tiles[y - 1][x].Draw(window);
+	tiles[y][x + 1].Draw(window);
+	tiles[y][x - 1].Draw(window);
+}
+
 void Board::setMaze(vector<vector<bool>> matrix)
 {
 	//We need to iterate through every node and change what is is, wall v path v crossed
@@ -80,7 +89,7 @@ void Board::leftClick(sf::Vector2i mousePos, sf::RenderWindow& window, vector<un
 	if (BFSbuttonBounds.contains(mousePos.x, mousePos.y))
 	{
 		//Start the BFS visualization
-		runBFS(adjList, src, end, window);
+		runBFS(window, adjList, src, end);
 	}
 	if (DFSbuttonBounds.contains(mousePos.x, mousePos.y))
 	{
@@ -101,7 +110,7 @@ void Board::leftClick(sf::Vector2i mousePos, sf::RenderWindow& window, vector<un
 	}
 }
 
-void Board::runBFS(vector<unordered_set<int>>& adjList, int src, int end, sf::RenderWindow& window)
+void Board::runBFS(sf::RenderWindow& window, vector<unordered_set<int>>& adjList, int src, int end)
 {
 	auto start = chrono::high_resolution_clock::now();
 	unordered_set<int> visited;
@@ -139,19 +148,6 @@ void Board::runBFS(vector<unordered_set<int>>& adjList, int src, int end, sf::Re
 			}
 		}
 	}
-	/*auto stopTime = chrono::high_resolution_clock::now();
-	chrono::duration<float> duration = stopTime - start;
-	cout << endl;
-	cout << endl;
-	cout << "Using Breadth First Search" << endl;
-	cout << "Finding " << end << " from " << src << " using BFS took "
-		<< duration.count() << " Im not sure time unit" << endl;
-	cout << "The distance from " << src << " to " << end << " is " << path.size() << endl;
-	cout << "Best path from " << src << " to " << end << ": ";*/
-	for (int i = 0; i < path.size(); i++) {
-		cout << path[i] << "-> ";
-	}
-	cout << end;
 }
 
 
