@@ -21,15 +21,16 @@ void printList(vector<unordered_set<int>>& adjList);
 void BFS(vector<unordered_set<int>>& adjList, int src, int end);
 void setBoard(Board& board);
 // Program Driver
-int main()
-{
-	// 2500 x 40 gives 100k vertices and fits in console
+// 2500 x 40 gives 100k vertices and fits in console
+	const int Y = 2500, X = 40;
+	//auto bigAdjList = generateGraph(Y, X);
+	//auto bigMatrix = graphToMaze(bigAdjList, Y, X);
+	//printMaze(bigMatrix);
+
+	//SFML START
 	const int H = 25, W = 35;
 	auto adjList = generateGraph(H, W);
 	auto matrix = graphToMaze(adjList, H, W);
-	printMaze(matrix);
-
-	//SFML START
 	Board board;
 	setBoard(board);
 	board.setMaze(matrix);
@@ -49,7 +50,7 @@ int main()
 				 }
 				 if (event.mouseButton.button == sf::Mouse::Left)
 				 {
-					 board.leftClick(sf::Mouse::getPosition(window));
+					 board.leftClick(sf::Mouse::getPosition(window), window, adjList, 71, 3550);
 				 }
 			 }
 		 }
