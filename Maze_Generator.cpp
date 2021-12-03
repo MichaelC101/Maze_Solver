@@ -21,7 +21,9 @@ void printList(vector<unordered_set<int>>& adjList);
 void BFS(vector<unordered_set<int>>& adjList, int src, int end);
 void setBoard(Board& board);
 // Program Driver
-// 2500 x 40 gives 100k vertices and fits in console
+int main()
+{
+	// 2500 x 40 gives 100k vertices and fits in console
 	const int Y = 2500, X = 40;
 	//auto bigAdjList = generateGraph(Y, X);
 	//auto bigMatrix = graphToMaze(bigAdjList, Y, X);
