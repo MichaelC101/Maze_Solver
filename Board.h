@@ -4,6 +4,7 @@
 #include <vector>
 #include <fstream>
 #include "Tile.h"
+#include <unordered_set>
 using namespace std;
 
 
@@ -16,14 +17,18 @@ class Board
 	sf::Sprite resetButton;
 	sf::Sprite BellmanFordButton;
 	vector<vector<Tile>> tiles;
+	sf::Text text;
+
 
 public:
 	Board();
 	void Draw(sf::RenderWindow& window);
 	void rightClick(sf::Vector2i mousePos);
-	void leftClick(sf::Vector2i mousePos);
+	void leftClick(sf::Vector2i mousePos, sf::RenderWindow& window, vector<unordered_set<int>>& adjList, int src, int end);
 	void resetGame();
 	void addTile(Tile& tile, int x, int y);
 	void setMaze(vector<vector<bool>> matrix);
+	void runBFS(sf::RenderWindow& window, vector<unordered_set<int>>& adjList, int src, int end);
+	void reDraw(sf::RenderWindow& window, int x, int y);
 };
 
