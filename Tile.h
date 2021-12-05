@@ -11,8 +11,10 @@ class Tile
 	int yposition;
 	sf::Vector2i position;
 	sf::Sprite crossed;
+	sf::Sprite finalPath;
 	bool isPath;
 	bool isCrossed;
+	bool isFinalPath;
 
 public:
 	sf::Sprite path;
@@ -21,6 +23,7 @@ public:
 	void Draw(sf::RenderWindow& window);
 	void makePath(bool yes);
 	void makeCrossed(bool yes);
+	void makeFinalPath(bool yes);
 	void setSpritePositions();
 	void setPosition(int x, int y);
 };
