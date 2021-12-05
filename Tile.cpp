@@ -11,9 +11,9 @@ Tile::Tile()
 	wall = temp;
 	temp.setTexture(TextureManager::getTexture("finalPath"));
 	finalPath = temp;
-	bool isPath = false;
-	bool isCrossed = false;
-	bool isFinalPath = false;
+	isPath = false;
+	isCrossed = false;
+	isFinalPath = false;
 }
 
 void Tile::Draw(sf::RenderWindow& window)
@@ -44,6 +44,11 @@ void Tile::makeFinalPath(bool yes)
 	isFinalPath = yes;
 }
 
+bool Tile::isCrossedTrue()
+{
+	return isCrossed;
+}
+
 void Tile::setSpritePositions()
 {
 	path.setPosition(xposition, yposition);
@@ -59,4 +64,3 @@ void Tile::setPosition(int x, int y)
 	position = sf::Vector2i(x, y);
 	setSpritePositions();
 }
-
