@@ -102,7 +102,6 @@ void Board::leftClick(sf::Vector2i mousePos, sf::RenderWindow& window, vector<un
 		//Start the Bellman-Ford visualization
 		runBellmanFord(window, adjList, src, end);
 	}
-
 	if (timeButtonBounds.contains(mousePos.x, mousePos.y))
 	{
 		//Start the big boy timing and show results screen
@@ -132,8 +131,11 @@ void Board::runBFS(sf::RenderWindow& window, vector<unordered_set<int>>& adjList
 			tiles[1][0].makeCrossed(true);
 		if (front == 874)
 			tiles[49][70].makeCrossed(true);
-		// random_shuffle(adjList[front].begin(), adjList[front].end());
-		for (int n : adjList[front])
+		vector<int> neighbors;
+		for (auto neighbor : adjList[front])
+			neighbors.push_back(neighbor);
+		random_shuffle(neighbors.begin(), neighbors.end());
+		for (int n : neighbors)
 		{
 			int yValN = n / 35 * 2 + 1;
 			int xValN = n % 35 * 2 + 1;
@@ -209,8 +211,11 @@ void Board::runDFS(sf::RenderWindow& window, vector<unordered_set<int>>& adjList
 			tiles[1][0].makeCrossed(true);
 		if (front == 874)
 			tiles[49][70].makeCrossed(true);
-		// random_shuffle(adjList[front].begin(), adjList[front].end());
-		for (int n : adjList[front])
+		vector<int> neighbors;
+		for (auto neighbor : adjList[front])
+			neighbors.push_back(neighbor);
+		random_shuffle(neighbors.begin(), neighbors.end());
+		for (int n : neighbors)
 		{
 			int yValN = n / 35 * 2 + 1;
 			int xValN = n % 35 * 2 + 1;
