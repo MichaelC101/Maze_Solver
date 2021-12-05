@@ -1,9 +1,9 @@
 #include "Board.h"
 #include "TextureManager.h"
-#include <thread>
 #include <chrono>
 #include <queue>
 #include <stack>
+#include <thread>
 using namespace std;
 
 Board::Board()
@@ -23,7 +23,7 @@ Board::Board()
 	timeButton.setPosition(434, 601);
 	tiles.resize(51);
 	for (int i = 0; i < 51; i++) //im dumb and cant figure out a better way of doing this
-		tiles[i].resize(71);
+		tiles[i].resize(71);	 //I think thats a great way to do that :)  -Sam
 }
 
 void Board::Draw(sf::RenderWindow& window)
@@ -34,9 +34,9 @@ void Board::Draw(sf::RenderWindow& window)
 	window.draw(timeButton);
 	window.draw(DFSbutton);
 	window.draw(BellmanFordButton);
-	for (int i = 0; i < tiles.size(); i++)
+	for (unsigned int i = 0; i < tiles.size(); i++)
 	{
-		for (int j = 0; j < tiles[i].size(); j++)
+		for (unsigned int j = 0; j < tiles[i].size(); j++)
 			tiles[i][j].Draw(window);
 	}
 }
@@ -53,9 +53,9 @@ void Board::reDraw(sf::RenderWindow& window, int x, int y)
 void Board::setMaze(vector<vector<bool>> matrix)
 {
 	//We need to iterate through every node and change what is is, wall v path v crossed
-	for (int i = 0; i < matrix.size(); i++)
+	for (unsigned int i = 0; i < matrix.size(); i++)
 	{
-		for (int j = 0; j < matrix[i].size(); j++)
+		for (unsigned int j = 0; j < matrix[i].size(); j++)
 		{
 			if (matrix[i][j])
 				tiles[i][j].makePath(true);
@@ -63,7 +63,7 @@ void Board::setMaze(vector<vector<bool>> matrix)
 	}
 }
 
-void Board::addTile(Tile& tile, int y , int x)
+void Board::addTile(Tile& tile, int y, int x)
 {
 	tiles[x][y] = tile;
 }
@@ -105,12 +105,13 @@ void Board::leftClick(sf::Vector2i mousePos, sf::RenderWindow& window, vector<un
 
 	if (timeButtonBounds.contains(mousePos.x, mousePos.y))
 	{
-		
+		//Start the big boy timing and show results screen
 	}
 }
 
 void Board::runBFS(sf::RenderWindow& window, vector<unordered_set<int>>& adjList, int src, int end)
 {
+	resetGame();
 	unordered_set<int> visited;
 	queue<int> queue;
 	vector<int> parents(end + 1, -1);
@@ -118,33 +119,44 @@ void Board::runBFS(sf::RenderWindow& window, vector<unordered_set<int>>& adjList
 	queue.push(src);
 	vector<int> path;
 
-	while (!queue.empty()) {
-		int x = queue.front();
-		if (x == end) {
-			break;
-		}
-
+	while (!queue.empty())
+	{
 		//Code for visualizing the popped tile
 		int front = queue.front();
 		queue.pop();
 		int yVal = front / 35 * 2 + 1;
 		int xVal = front % 35 * 2 + 1;
+
+		// Edge includer
+		if (front == 0)
+			tiles[1][0].makeCrossed(true);
+		if (front == 874)
+			tiles[49][70].makeCrossed(true);
+		// random_shuffle(adjList[front].begin(), adjList[front].end());
+		for (int n : adjList[front])
+		{
+			int yValN = n / 35 * 2 + 1;
+			int xValN = n % 35 * 2 + 1;
+			if (tiles[yValN][xValN].isCrossedTrue())
+			{
+				tiles[(yVal + yValN) / 2][(xVal + xValN) / 2].makeCrossed(true);
+			}
+			if (visited.count(n) == 0)
+			{
+				visited.insert(n);
+				queue.push(n);
+				parents[n] = front;
+			}
+		}
+
 		tiles[yVal][xVal].makeCrossed(true);
 		Draw(window);
 		window.display();
 		//this_thread::sleep_for(std::chrono::milliseconds(1));
 
-
-		vector<int> neighbors;
-		for (auto it = adjList[x].begin(); it != adjList[x].end(); ++it) {
-			neighbors.push_back(*it);
-		}
-		for (int v : neighbors) {
-			if (visited.count(v) == 0) {
-				visited.insert(v);
-				queue.push(v);
-				parents[v] = x;
-			}
+		if (front == end)
+		{
+			break;
 		}
 	}
 	//HIGHLIGHTING SELECTED PATH IN DARK GREEN
@@ -156,12 +168,18 @@ void Board::runBFS(sf::RenderWindow& window, vector<unordered_set<int>>& adjList
 		path.push_back(currNode);
 	}
 	path.pop_back();
+	tiles[49][70].makeFinalPath(true);
+	tiles[49][70].makeCrossed(false);
 	for (int i : path)
 	{
 		int yVal = i / 35 * 2 + 1;
 		int xVal = i % 35 * 2 + 1;
 		tiles[yVal][xVal].makeFinalPath(true);
 		tiles[yVal][xVal].makeCrossed(false);
+		int yValP = parents[i] / 35 * 2 + 1;
+		int xValP = parents[i] % 35 * 2 + 1;
+		tiles[(yVal + yValP) / 2][(xVal + xValP) / 2].makeFinalPath(true);
+		tiles[(yVal + yValP) / 2][(xVal + xValP) / 2].makeCrossed(false);
 		Draw(window);
 		window.display();
 	}
@@ -170,6 +188,7 @@ void Board::runBFS(sf::RenderWindow& window, vector<unordered_set<int>>& adjList
 
 void Board::runDFS(sf::RenderWindow& window, vector<unordered_set<int>>& adjList, int src, int end)
 {
+	resetGame();
 	unordered_set<int> visited;
 	stack<int> stack;
 	vector<int> parents(end + 1, -1);
@@ -177,33 +196,44 @@ void Board::runDFS(sf::RenderWindow& window, vector<unordered_set<int>>& adjList
 	stack.push(src);
 	vector<int> path;
 
-	while (!stack.empty()) {
-		int x = stack.top();
-		if (x == end) {
-			break;
-		}
-
-
+	while (!stack.empty())
+	{
 		//Code for visualizing the popped tile
 		int front = stack.top();
 		stack.pop();
 		int yVal = front / 35 * 2 + 1;
 		int xVal = front % 35 * 2 + 1;
+
+		// Edge includer
+		if (front == 0)
+			tiles[1][0].makeCrossed(true);
+		if (front == 874)
+			tiles[49][70].makeCrossed(true);
+		// random_shuffle(adjList[front].begin(), adjList[front].end());
+		for (int n : adjList[front])
+		{
+			int yValN = n / 35 * 2 + 1;
+			int xValN = n % 35 * 2 + 1;
+			if (tiles[yValN][xValN].isCrossedTrue())
+			{
+				tiles[(yVal + yValN) / 2][(xVal + xValN) / 2].makeCrossed(true);
+			}
+			if (visited.count(n) == 0)
+			{
+				visited.insert(n);
+				stack.push(n);
+				parents[n] = front;
+			}
+		}
+
 		tiles[yVal][xVal].makeCrossed(true);
 		Draw(window);
 		window.display();
 		//this_thread::sleep_for(std::chrono::milliseconds(1));
 
-		vector<int> neighbors;
-		for (auto it = adjList[x].begin(); it != adjList[x].end(); ++it) {
-			neighbors.push_back(*it);
-		}
-		for (int v : neighbors) {
-			if (visited.count(v) == 0) {
-				visited.insert(v);
-				stack.push(v);
-				parents[v] = x;
-			}
+		if (front == end)
+		{
+			break;
 		}
 	}
 	//HIGHLIGHTING SELECTED PATH IN DARK GREEN
@@ -215,12 +245,18 @@ void Board::runDFS(sf::RenderWindow& window, vector<unordered_set<int>>& adjList
 		path.push_back(currNode);
 	}
 	path.pop_back();
+	tiles[49][70].makeFinalPath(true);
+	tiles[49][70].makeCrossed(false);
 	for (int i : path)
 	{
 		int yVal = i / 35 * 2 + 1;
 		int xVal = i % 35 * 2 + 1;
 		tiles[yVal][xVal].makeFinalPath(true);
 		tiles[yVal][xVal].makeCrossed(false);
+		int yValP = parents[i] / 35 * 2 + 1;
+		int xValP = parents[i] % 35 * 2 + 1;
+		tiles[(yVal + yValP) / 2][(xVal + xValP) / 2].makeFinalPath(true);
+		tiles[(yVal + yValP) / 2][(xVal + xValP) / 2].makeCrossed(false);
 		Draw(window);
 		window.display();
 	}
@@ -229,57 +265,78 @@ void Board::runDFS(sf::RenderWindow& window, vector<unordered_set<int>>& adjList
 
 void Board::runDjikstra(sf::RenderWindow& window, vector<unordered_set<int>>& adjList, int src, int end)
 {
+	resetGame();
 	vector<int> path;
 	unordered_set<int> computed;
 	unordered_set<int> notComputed;
 	computed.emplace(src);
 	//filling notComputed with all verticies except src
-	for (int i = 0; i < adjList.size(); i++) {
-		if (computed.count(i) != 1) {
+	for (unsigned int i = 0; i < adjList.size(); i++)
+	{
+		if (computed.count(i) != 1)
+		{
 			notComputed.emplace(i);
 		}
 	}
-	// distance to each verticy
-	vector<int> d(adjList.size(), 99999);
+	// distance to each vertex
+	vector<int> d(adjList.size(), 999999);
 	d[src] = 0;
 	// keeps track of predecessor
 	vector<int> p(adjList.size(), -1);
 
-	for (auto it = adjList[src].begin(); it != adjList[src].end(); ++it) {
+	for (auto it = adjList[src].begin(); it != adjList[src].end(); ++it)
+	{
 		d[*it] = 1;
 		p[*it] = src;
 	}
+	tiles[1][0].makeCrossed(true);
 	tiles[1][1].makeCrossed(true);
 	Draw(window);
 	window.display();
-	while (!notComputed.empty()) {
+
+	while (!notComputed.empty())
+	{
 		//need the smallest index that hasnt been visited yet
 		vector<int> temp = d;
-		for (auto it = computed.begin(); it != computed.end(); ++it) {
-			temp[*it] = 999999999;
+		for (auto it = computed.begin(); it != computed.end(); ++it)
+		{
+			temp[*it] = INT_MAX;
 		}
 
 		int minIndex = std::min_element(temp.begin(), temp.end()) - temp.begin();
 		computed.emplace(minIndex);
 
-		//Trying to highlight what stuff has been done already
+		// Edge includer
 		int yVal = minIndex / 35 * 2 + 1;
 		int xVal = minIndex % 35 * 2 + 1;
+		if (minIndex == 874)
+			tiles[49][70].makeCrossed(true);
+		for (int n : adjList[minIndex])
+		{
+			int yValN = n / 35 * 2 + 1;
+			int xValN = n % 35 * 2 + 1;
+			if (tiles[yValN][xValN].isCrossedTrue())
+				tiles[(yVal + yValN) / 2][(xVal + xValN) / 2].makeCrossed(true);
+		}
+
+		//Trying to highlight what stuff has been done already
 		tiles[yVal][xVal].makeCrossed(true);
 		Draw(window);
 		window.display();
 
 		notComputed.erase(minIndex);
 
-		for (auto it = adjList[minIndex].begin(); it != adjList[minIndex].end(); ++it) {
-			if (notComputed.count(*it) != 0) {
-				if (d[minIndex] + 1 < d[*it]) {
+		for (auto it = adjList[minIndex].begin(); it != adjList[minIndex].end(); ++it)
+		{
+			if (notComputed.count(*it) != 0)
+			{
+				if (d[minIndex] + 1 < d[*it])
+				{
 					d[*it] = d[minIndex] + 1;
 					p[*it] = minIndex;
 				}
 			}
 		}
-
 	}
 
 	//HIGHLIGHTING SELECTED PATH IN DARK GREEN
@@ -290,12 +347,18 @@ void Board::runDjikstra(sf::RenderWindow& window, vector<unordered_set<int>>& ad
 		currNode = p[currNode];
 		path.push_back(currNode);
 	}
+	tiles[49][70].makeFinalPath(true);
+	tiles[49][70].makeCrossed(false);
 	for (int i : path)
 	{
 		int yVal = i / 35 * 2 + 1;
 		int xVal = i % 35 * 2 + 1;
 		tiles[yVal][xVal].makeFinalPath(true);
 		tiles[yVal][xVal].makeCrossed(false);
+		int yValP = p[i] / 35 * 2 + 1;
+		int xValP = p[i] % 35 * 2 + 1;
+		tiles[(yVal + yValP) / 2][(xVal + xValP) / 2].makeFinalPath(true);
+		tiles[(yVal + yValP) / 2][(xVal + xValP) / 2].makeCrossed(false);
 		Draw(window);
 		window.display();
 	}
@@ -304,12 +367,14 @@ void Board::runDjikstra(sf::RenderWindow& window, vector<unordered_set<int>>& ad
 
 void Board::runBellmanFord(sf::RenderWindow& window, vector<unordered_set<int>>& adjList, int src, int end)
 {
+	resetGame();
 	vector<int> path;
-	vector<int> d(adjList.size(), 9999999);
+	vector<int> d(adjList.size(), 999999);
 	vector<int> p(adjList.size(), -1);
 	d[src] = 0;
 	p[src] = 0;
-	for (int j = 0; j < adjList.size() - 1; j++) {
+	for (unsigned int j = 0; j < adjList.size() - 1; j++)
+	{
 
 		//Visualizing the nodes???? not sure micheal plz help
 		//int yVal = j / 35 * 2 + 1;
@@ -318,9 +383,12 @@ void Board::runBellmanFord(sf::RenderWindow& window, vector<unordered_set<int>>&
 		//Draw(window);
 		//window.display();
 
-		for (int i = 0; i < adjList.size(); i++) {
-			for (auto it = adjList[i].begin(); it != adjList[i].end(); ++it) {
-				if (d[*it] > d[i] + 1) {
+		for (unsigned int i = 0; i < adjList.size(); i++)
+		{
+			for (auto it = adjList[i].begin(); it != adjList[i].end(); ++it)
+			{
+				if (d[*it] > d[i] + 1)
+				{
 					d[*it] = d[i] + 1;
 					p[*it] = i;
 				}
@@ -335,15 +403,25 @@ void Board::runBellmanFord(sf::RenderWindow& window, vector<unordered_set<int>>&
 		currNode = p[currNode];
 		path.push_back(currNode);
 	}
+	tiles[49][70].makeFinalPath(true);
+	tiles[49][70].makeCrossed(false);
 	for (int i : path)
 	{
 		int yVal = i / 35 * 2 + 1;
 		int xVal = i % 35 * 2 + 1;
 		tiles[yVal][xVal].makeFinalPath(true);
 		tiles[yVal][xVal].makeCrossed(false);
+		int yValP = p[i] / 35 * 2 + 1;
+		int xValP = p[i] % 35 * 2 + 1;
+		tiles[(yVal + yValP) / 2][(xVal + xValP) / 2].makeFinalPath(true);
+		tiles[(yVal + yValP) / 2][(xVal + xValP) / 2].makeCrossed(false);
 		Draw(window);
 		window.display();
 	}
+	tiles[1][0].makeFinalPath(true);
+	tiles[1][0].makeCrossed(false);
+	Draw(window);
+	window.display();
 	cout << "Distance for BellmanFord Path: " << path.size() << endl;
 }
 
@@ -358,12 +436,3 @@ void Board::resetGame()
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
