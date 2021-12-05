@@ -9,8 +9,11 @@ Tile::Tile()
 	crossed = temp;
 	temp.setTexture(TextureManager::getTexture("mazeWall"));
 	wall = temp;
+	temp.setTexture(TextureManager::getTexture("finalPath"));
+	finalPath = temp;
 	bool isPath = false;
 	bool isCrossed = false;
+	bool isFinalPath = false;
 }
 
 void Tile::Draw(sf::RenderWindow& window)
@@ -21,6 +24,8 @@ void Tile::Draw(sf::RenderWindow& window)
 		window.draw(path);
 		if (isCrossed == true)
 			window.draw(crossed);
+		if (isFinalPath == true)
+			window.draw(finalPath);
 	}
 }
 
@@ -34,11 +39,17 @@ void Tile::makeCrossed(bool yes)
 	isCrossed = yes;
 }
 
+void Tile::makeFinalPath(bool yes)
+{
+	isFinalPath = yes;
+}
+
 void Tile::setSpritePositions()
 {
 	path.setPosition(xposition, yposition);
 	crossed.setPosition(xposition, yposition);
 	wall.setPosition(xposition, yposition);
+	finalPath.setPosition(xposition, yposition);
 }
 
 void Tile::setPosition(int x, int y)
