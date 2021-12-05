@@ -46,13 +46,10 @@ int main()
 				 window.close();
 			 if (event.type == sf::Event::MouseButtonPressed)
 			 {
-				 if (event.mouseButton.button == sf::Mouse::Right)
-				 {
-					 board.rightClick(sf::Mouse::getPosition(window));
-				 }
 				 if (event.mouseButton.button == sf::Mouse::Left)
 				 {
-					 board.leftClick(sf::Mouse::getPosition(window), window, adjList, 71, 3550);
+					 board.leftClick(sf::Mouse::getPosition(window), window, adjList, 0, 874);
+					 //71 3550 is converted values
 				 }
 			 }
 		 }
@@ -76,9 +73,6 @@ void setBoard(Board& board)
 		}
 	}
 }
-
-
-
 
 
 // Generates a random single-solution maze adjacency list using a version of DFS, then removes walls to introduce more solutions
@@ -124,7 +118,8 @@ vector<unordered_set<int>> generateGraph(int H = 5, int W = 5)
 			neighbors.push_back(u - 1);
 
 		// Push neighbors onto the stack in random order
-		if (!neighbors.empty()) {
+		if (!neighbors.empty()) 
+		{
 			random_shuffle(neighbors.begin(), neighbors.end());
 			for (auto neighbor : neighbors)
 				s.emplace(neighbor, u);
@@ -146,7 +141,8 @@ vector<unordered_set<int>> generateGraph(int H = 5, int W = 5)
 		if (u % W > 0 && !adjList[u].count(u - 1))
 			neighbors.push_back(u - 1);
 		// Knock down a random wall (make a connection with a random neighbor)
-		if (!neighbors.empty()) {
+		if (!neighbors.empty()) 
+		{
 			int v = neighbors[rand() % neighbors.size()];
 			adjList[u].insert(v);
 			adjList[v].insert(u);
@@ -188,45 +184,46 @@ void printList(vector<unordered_set<int>>& adjList) {
 		}
 	}
 }
+
 //bellmanFord
-void bellmanFord(vector<unordered_set<int>>& adjList, int src, int end){
-    auto start =  chrono::high_resolution_clock::now();
-    vector<int> d(adjList.size(), 9999999);
-    vector<int> p(adjList.size(), -1);
-    d[src] = 0;
-    p[src] = 0;
-    for (int j = 0; j < adjList.size() - 1; j++) {
-        for (int i = 0; i < adjList.size(); i++) {
-            for (auto it = adjList[i].begin(); it != adjList[i].end(); ++it) {
-                if (d[*it] > d[i] + 1) {
-                    d[*it] = d[i] + 1;
-                    p[*it] = i;
-                }
-            }
-        }
-    }
-    auto stopTime =  chrono::high_resolution_clock::now();
-    chrono::duration<float> duration = stopTime - start;
-    cout << endl;
-    cout << endl;
-    cout << "Using Bellman-Ford" << endl;
-    cout << "Finding " << end << " from " << src << " using Bellman-Ford took "
-         << duration.count() << " seconds" << endl;
-    cout << "Verticies visited " << d[end] << endl;
-    cout << "Best path from " << src << " to " << end << ": ";
-    int x = 999;
-    int y = end;
-    vector <int> v;
-    while (x != src){
-        x = p[y];
-        v.push_back(x);
-        y = x;
-    }
-    for (int i = v.size() - 1; i >= 0; i--){
-        cout << v[i] << " -> ";
-    }
-    cout << end << endl;
-    cout << endl;
+void bellmanFord(vector<unordered_set<int>>& adjList, int src, int end) {
+	auto start = chrono::high_resolution_clock::now();
+	vector<int> d(adjList.size(), 9999999);
+	vector<int> p(adjList.size(), -1);
+	d[src] = 0;
+	p[src] = 0;
+	for (int j = 0; j < adjList.size() - 1; j++) {
+		for (int i = 0; i < adjList.size(); i++) {
+			for (auto it = adjList[i].begin(); it != adjList[i].end(); ++it) {
+				if (d[*it] > d[i] + 1) {
+					d[*it] = d[i] + 1;
+					p[*it] = i;
+				}
+			}
+		}
+	}
+	auto stopTime = chrono::high_resolution_clock::now();
+	chrono::duration<float> duration = stopTime - start;
+	cout << endl;
+	cout << endl;
+	cout << "Using Bellman-Ford" << endl;
+	cout << "Finding " << end << " from " << src << " using Bellman-Ford took "
+		<< duration.count() << " seconds" << endl;
+	cout << "Verticies visited " << d[end] << endl;
+	cout << "Best path from " << src << " to " << end << ": ";
+	int x = 999;
+	int y = end;
+	vector <int> v;
+	while (x != src) {
+		x = p[y];
+		v.push_back(x);
+		y = x;
+	}
+	for (int i = v.size() - 1; i >= 0; i--) {
+		cout << v[i] << " -> ";
+	}
+	cout << end << endl;
+	cout << endl;
 }
 
 // does dijkstra stuff
@@ -308,9 +305,9 @@ void DFS(vector<unordered_set<int>>& adjList, int src, int end) {
 
 	while (!stack.empty()) {
 		int x = stack.top();
-// 		if (x == end) {
-// 			break;
-// 		}
+		if (x == end) {
+			break;
+		}
 		//cout << x << " ";
 		path.push_back(x);
 		stack.pop();
@@ -349,9 +346,9 @@ void BFS(vector<unordered_set<int>>& adjList, int src, int end) {
 
 	while (!queue.empty()) {
 		int x = queue.front();
-// 		if (x == end) {
-// 			break;
-// 		}
+		if (x == end) {
+			break;
+		}
 		path.push_back(x);
 		queue.pop();
 		vector<int> neighbors;
