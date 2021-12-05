@@ -1,9 +1,7 @@
 #pragma once
+#include "TextureManager.h"
 #include <SFML/Graphics.hpp>
 #include <string>
-#include "TextureManager.h"
-
-
 
 class Tile
 {
@@ -24,7 +22,7 @@ public:
 	void makePath(bool yes);
 	void makeCrossed(bool yes);
 	void makeFinalPath(bool yes);
+	bool isCrossedTrue();
 	void setSpritePositions();
 	void setPosition(int x, int y);
 };
-
