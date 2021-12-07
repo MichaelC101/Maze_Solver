@@ -12,7 +12,7 @@ Board::Board()
 	BFSbutton.setPosition(0, 601);
 	DFSbutton.setTexture(TextureManager::getTexture("DFS"));
 	DFSbutton.setPosition(217, 601);
-	DijkstraButton.setTexture(TextureManager::getTexture("Dijkstra"));
+	DijkstraButton.setTexture(TextureManager::getTexture("Djikstra"));
 	DijkstraButton.setPosition(651, 601);
 	resetButton.setTexture(TextureManager::getTexture("reset"));
 	resetButton.setPosition(921, 0);
