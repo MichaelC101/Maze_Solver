@@ -121,27 +121,6 @@ void Board::leftClick(sf::Vector2i mousePos, sf::RenderWindow& window)
 		allResults.insert(allResults.end(), DFSResults.begin(), DFSResults.end());
 		allResults.insert(allResults.end(), DijkstraResults.begin(), DijkstraResults.end());
 		allResults.insert(allResults.end(), AStarResults.begin(), AStarResults.end());
-
-		// MICHAEL: you can use this vector called allResults.
-		// It has duration, numvisited, and path length for bfs, then dfs, then dijkstra, then a*
-		// Total of 12 items.
-
-// 		cout << "In " << allResults[0] << " seconds, ";
-// 		cout << "BFS explored " << (int)allResults[1] << " vertices ";
-// 		cout << "to find the shortest solution, which is " << (int)allResults[2] << " vertices in length." << endl;
-
-// 		cout << "In " << allResults[3] << " seconds, ";
-// 		cout << "DFS explored " << (int)allResults[4] << " vertices ";
-// 		cout << "to find a valid but unoptimal solution, which is " << (int)allResults[5] << " vertices in length." << endl;
-
-// 		cout << "In " << allResults[6] << " seconds, ";
-// 		cout << "Dijkstra's algorithm explored " << (int)allResults[7] << " vertices ";
-// 		cout << "to find the shortest solution, which is " << (int)allResults[8] << " vertices in length." << endl;
-
-// 		cout << "In " << allResults[9] << " seconds, ";
-// 		cout << "A* search explored " << (int)allResults[10] << " vertices ";
-// 		cout << "to find the shortest solution, which is " << (int)allResults[11] << " vertices in length." << endl;
-		
 		displayData(window, allResults);
 	}
 }
