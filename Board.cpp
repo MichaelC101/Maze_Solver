@@ -962,7 +962,7 @@ int Board::gatherSize(sf::RenderWindow& window) {
         window.draw(size1);
         window.display();
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
             return size;
         }
 //        if(sf::Mouse::isButtonPressed(sf::Mouse::Left)){
