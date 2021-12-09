@@ -2,8 +2,8 @@
 #include "TextureManager.h"
 #include <chrono>
 #include <queue>
-#include <stack>
 #include <sstream>
+#include <stack>
 using namespace std;
 
 Board::Board()
@@ -111,17 +111,7 @@ void Board::leftClick(sf::Vector2i mousePos, sf::RenderWindow& window)
 	if (timeButtonBounds.contains(mousePos.x, mousePos.y))
 	{
 		//Start the big boy timing and show results screen
-		setBigBoard(320, 320);
-		vector<float> BFSResults = runBigBFS();
-		vector<float> DFSResults = runBigDFS();
-		vector<float> DijkstraResults = runBigDijkstra();
-		vector<float> AStarResults = runBigAStar();
-		vector<float> allResults;
-		allResults.insert(allResults.end(), BFSResults.begin(), BFSResults.end());
-		allResults.insert(allResults.end(), DFSResults.begin(), DFSResults.end());
-		allResults.insert(allResults.end(), DijkstraResults.begin(), DijkstraResults.end());
-		allResults.insert(allResults.end(), AStarResults.begin(), AStarResults.end());
-		displayData(window, allResults);
+		displayData(window);
 	}
 }
 
@@ -797,105 +787,122 @@ unsigned int Board::bigF(vector<int> d, int i)
 	return d[i] + (bigH - i / bigW - 1) + (bigW - i % bigW - 1);
 }
 
-void Board::displayData(sf::RenderWindow &window, vector<float> data) {
+void Board::displayData(sf::RenderWindow& window)
+{
 
-    sf::RectangleShape screen(sf::Vector2f(window.getSize().x, window.getSize().y));
-    screen.setFillColor(sf::Color(0,0,0));
-    screen.setPosition(0, 0);
-    returnImage.setTexture(TextureManager::getTexture("return"));
-    returnImage.setPosition(window.getSize().x - 200, window.getSize().y - 150);    
+	sf::RectangleShape screen(sf::Vector2f(window.getSize().x, window.getSize().y));
+	screen.setFillColor(sf::Color(0, 0, 0));
+	screen.setPosition(0, 0);
+	returnImage.setTexture(TextureManager::getTexture("return"));
+	returnImage.setPosition(window.getSize().x - 234, window.getSize().y - 240);
 
-    // Displayes instructions to hover over return button to exit
-    sf::Text text;
-    sf::Font font;
-    font.loadFromFile("text/mono.ttf");
-    text.setFont(font);
-    text.setColor(sf::Color::White);
-    text.setCharacterSize(35);
-    text.setPosition(300,30);
-    text.setFillColor(sf::Color::White);
-    std::stringstream stream;
-    stream << "Hover over return button to return";
-    text.setString(stream.str());
+	// Displayes instructions to hover over return button to exit
+	sf::Text text;
+	sf::Font font;
+	font.loadFromFile("text/mono.ttf");
+	text.setFont(font);
+	text.setCharacterSize(50);
+	text.setPosition(405, 30);
+	text.setFillColor(sf::Color::White);
+	std::stringstream stream;
+	stream << "Maze Runners";
+	text.setString(stream.str());
 
-    // Displays instructions to hover over return button to exit
-    sf::Text information;
-    information.setFont(font);
-    information.setColor(sf::Color::White);
-    information.setCharacterSize(35);
-    information.setPosition(250,100);
-    information.setFillColor(sf::Color::White);
-    std::stringstream stream1;
-    stream1 << "Timing comparisons for 102,400 vertices";
-    information.setString(stream1.str());
+	// Displays instructions to hover over return button to exit
+	sf::Text information;
+	information.setFont(font);
+	information.setCharacterSize(35);
+	information.setPosition(165, 100);
+	information.setFillColor(sf::Color::White);
+	std::stringstream stream1;
+	stream1 << "Timing comparison for maze of 100,000 vertices";
+	information.setString(stream1.str());
 
-    // Displays DFS information
-    sf::Text DFS;
-    DFS.setFont(font);
-    DFS.setColor(sf::Color::White);
-    DFS.setCharacterSize(23);
-    DFS.setPosition(20,210);
-    DFS.setFillColor(sf::Color::White);
-    std::stringstream DFSstream;
-    DFSstream << "DFS took " << data[3] << " seconds, visited " << data[4] << " vertices, and best path is " << data[5] << " vertices in length";
-    DFS.setString(DFSstream.str());
+	window.draw(screen);
+	window.draw(returnImage);
+	window.draw(text);
+	window.draw(information);
+	window.display();
+	setBigBoard(320, 320);
 
+	// Displays DFS information
+	vector<float> data = runBigDFS();
+	sf::Text DFS;
+	DFS.setFont(font);
+	DFS.setCharacterSize(23);
+	DFS.setPosition(20, 210);
+	DFS.setFillColor(sf::Color::White);
+	std::stringstream DFSstream;
+	DFSstream << "DFS took " << data[0] << " seconds, visited " << data[1] << " vertices, and found a valid path of " << data[2] << " vertices";
+	DFS.setString(DFSstream.str());
 
-    // Displays DFS information
-    sf::Text BFS;
-    BFS.setFont(font);
-    BFS.setColor(sf::Color::White);
-    BFS.setCharacterSize(23);
-    BFS.setPosition(20,270);
-    BFS.setFillColor(sf::Color::White);
-    std::stringstream BFSstream;
-    BFSstream << "BFS took " << data[0] << " seconds, visited " << data[1] << " vertices, and best path is " << data[2] << " vertices in length";
-    BFS.setString(BFSstream.str());
+	window.draw(screen);
+	window.draw(returnImage);
+	window.draw(text);
+	window.draw(information);
+	window.draw(DFS);
+	window.display();
 
+	// Displays BFS information
+	data = runBigBFS();
+	sf::Text BFS;
+	BFS.setFont(font);
+	BFS.setCharacterSize(23);
+	BFS.setPosition(20, 270);
+	BFS.setFillColor(sf::Color::White);
+	std::stringstream BFSstream;
+	BFSstream << "BFS took " << data[0] << " seconds, visited " << data[1] << " vertices, and found shortest path of " << data[2] << " vertices";
+	BFS.setString(BFSstream.str());
 
-    // Displays Dijkstras information
-    sf::Text DIJ;
-    DIJ.setFont(font);
-    DIJ.setColor(sf::Color::White);
-    DIJ.setCharacterSize(23);
-    DIJ.setPosition(20,330);
-    DIJ.setFillColor(sf::Color::White);
-    std::stringstream DIJstream;
-    DIJstream << "Dijkstras took " << data[6] << " seconds, visited " << data[7] << " vertices, and best path is " << data[8] << " vertices in length";
-    DIJ.setString(DIJstream.str());
+	window.draw(screen);
+	window.draw(returnImage);
+	window.draw(text);
+	window.draw(information);
+	window.draw(DFS);
+	window.draw(BFS);
+	window.display();
 
-    // Displays A* information
-    sf::Text A;
-    A.setFont(font);
-    A.setColor(sf::Color::White);
-    A.setCharacterSize(23);
-    A.setPosition(20,390);
-    A.setFillColor(sf::Color::White);
-    std::stringstream Astream;
-    Astream << "A* took " << data[9] << " seconds, visited " << data[10] << " vertices, and best path is " << data[11] << " vertices in length";
-    A.setString(Astream.str());
+	// Displays Dijkstras information
+	data = runBigDijkstra();
+	sf::Text DIJ;
+	DIJ.setFont(font);
+	DIJ.setCharacterSize(23);
+	DIJ.setPosition(20, 330);
+	DIJ.setFillColor(sf::Color::White);
+	std::stringstream DIJstream;
+	DIJstream << "Dijkstra's took " << data[0] << " seconds, visited " << data[1] << " vertices, and found shortest path of " << data[2] << " vertices";
+	DIJ.setString(DIJstream.str());
 
+	window.draw(screen);
+	window.draw(returnImage);
+	window.draw(text);
+	window.draw(information);
+	window.draw(DFS);
+	window.draw(BFS);
+	window.draw(DIJ);
+	window.display();
 
-    sf::Event event1;
-    while (true){
-        window.draw(screen);
-        window.draw(returnImage);
-        window.draw(text);
-        window.draw(information);
-        window.draw(DFS);
-        window.draw(BFS);
-        window.draw(DIJ);
-        window.draw(A);
-        window.display();
+	// Displays A* information
+	data = runBigAStar();
+	sf::Text A;
+	A.setFont(font);
+	A.setCharacterSize(23);
+	A.setPosition(20, 390);
+	A.setFillColor(sf::Color::White);
+	std::stringstream Astream;
+	Astream << "A* took " << data[0] << " seconds, visited " << data[1] << " vertices, and found shortest path of " << data[2] << " vertices";
+	A.setString(Astream.str());
 
-        int xx = sf::Mouse::getPosition().x;
-        int yy = sf::Mouse::getPosition().y ;
-        returnImage.getGlobalBounds().contains(xx, yy);
-        int returnLeft = returnImage.getGlobalBounds().left;
-        int returnTop = returnImage.getGlobalBounds().top;
-        cout << yy << endl;
-        if (xx > 1310 && yy > 793 ){
-            break;
-        }
-    }
+	window.draw(screen);
+	window.draw(returnImage);
+	window.draw(text);
+	window.draw(information);
+	window.draw(DFS);
+	window.draw(BFS);
+	window.draw(DIJ);
+	window.draw(A);
+	window.display();
+
+	while (!sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		continue;
 }
