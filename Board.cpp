@@ -921,7 +921,7 @@ int Board::gatherSize(sf::RenderWindow& window) {
     instruction.setFont(font);
     font.loadFromFile("text/mono.ttf");
     instruction.setCharacterSize(30);
-    instruction.setPosition(250, 50);
+    instruction.setPosition(300, 50);
     instruction.setFillColor(sf::Color::White);
     std::stringstream instructionstream;
     instructionstream << "Select the length and width of maze ";
@@ -935,6 +935,15 @@ int Board::gatherSize(sf::RenderWindow& window) {
     std::stringstream instructionstream2;
     instructionstream2 << "Click Up arrow to increase and Down to decrease ";
     instruction2.setString(instructionstream2.str());
+	
+    sf::Text instruction3;
+    instruction3.setFont(font);
+    instruction3.setCharacterSize(30);
+    instruction3.setPosition(340, 150);
+    instruction3.setFillColor(sf::Color::White);
+    std::stringstream instructionstream3;
+    instructionstream3 << "Click \"Enter\" to submit input";
+    instruction3.setString(instructionstream3.str());
 
     sf::Text size1;
     size1.setFont(font);
@@ -959,6 +968,7 @@ int Board::gatherSize(sf::RenderWindow& window) {
         window.draw(screen1);
         window.draw(instruction);
         window.draw(instruction2);
+	window.draw(instruction3);
         window.draw(size1);
         window.display();
 
