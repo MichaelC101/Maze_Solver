@@ -3,6 +3,7 @@
 #include <chrono>
 #include <queue>
 #include <stack>
+#include <sstream>
 using namespace std;
 
 Board::Board()
@@ -125,21 +126,23 @@ void Board::leftClick(sf::Vector2i mousePos, sf::RenderWindow& window)
 		// It has duration, numvisited, and path length for bfs, then dfs, then dijkstra, then a*
 		// Total of 12 items.
 
-		cout << "In " << allResults[0] << " seconds, ";
-		cout << "BFS explored " << (int)allResults[1] << " vertices ";
-		cout << "to find the shortest solution, which is " << (int)allResults[2] << " vertices in length." << endl;
+// 		cout << "In " << allResults[0] << " seconds, ";
+// 		cout << "BFS explored " << (int)allResults[1] << " vertices ";
+// 		cout << "to find the shortest solution, which is " << (int)allResults[2] << " vertices in length." << endl;
 
-		cout << "In " << allResults[3] << " seconds, ";
-		cout << "DFS explored " << (int)allResults[4] << " vertices ";
-		cout << "to find a valid but unoptimal solution, which is " << (int)allResults[5] << " vertices in length." << endl;
+// 		cout << "In " << allResults[3] << " seconds, ";
+// 		cout << "DFS explored " << (int)allResults[4] << " vertices ";
+// 		cout << "to find a valid but unoptimal solution, which is " << (int)allResults[5] << " vertices in length." << endl;
 
-		cout << "In " << allResults[6] << " seconds, ";
-		cout << "Dijkstra's algorithm explored " << (int)allResults[7] << " vertices ";
-		cout << "to find the shortest solution, which is " << (int)allResults[8] << " vertices in length." << endl;
+// 		cout << "In " << allResults[6] << " seconds, ";
+// 		cout << "Dijkstra's algorithm explored " << (int)allResults[7] << " vertices ";
+// 		cout << "to find the shortest solution, which is " << (int)allResults[8] << " vertices in length." << endl;
 
-		cout << "In " << allResults[9] << " seconds, ";
-		cout << "A* search explored " << (int)allResults[10] << " vertices ";
-		cout << "to find the shortest solution, which is " << (int)allResults[11] << " vertices in length." << endl;
+// 		cout << "In " << allResults[9] << " seconds, ";
+// 		cout << "A* search explored " << (int)allResults[10] << " vertices ";
+// 		cout << "to find the shortest solution, which is " << (int)allResults[11] << " vertices in length." << endl;
+		
+		displayData(window, allResults);
 	}
 }
 
@@ -813,4 +816,107 @@ vector<float> Board::runBigAStar()
 unsigned int Board::bigF(vector<int> d, int i)
 {
 	return d[i] + (bigH - i / bigW - 1) + (bigW - i % bigW - 1);
+}
+
+void Board::displayData(sf::RenderWindow &window, vector<float> data) {
+
+    sf::RectangleShape screen(sf::Vector2f(window.getSize().x, window.getSize().y));
+    screen.setFillColor(sf::Color(0,0,0));
+    screen.setPosition(0, 0);
+    returnImage.setTexture(TextureManager::getTexture("return"));
+    returnImage.setPosition(window.getSize().x - 200, window.getSize().y - 150);    
+
+    // Displayes instructions to hover over return button to exit
+    sf::Text text;
+    sf::Font font;
+    font.loadFromFile("text/mono.ttf");
+    text.setFont(font);
+    text.setColor(sf::Color::White);
+    text.setCharacterSize(35);
+    text.setPosition(300,30);
+    text.setFillColor(sf::Color::White);
+    std::stringstream stream;
+    stream << "Hover over return button to return";
+    text.setString(stream.str());
+
+    // Displays instructions to hover over return button to exit
+    sf::Text information;
+    information.setFont(font);
+    information.setColor(sf::Color::White);
+    information.setCharacterSize(35);
+    information.setPosition(250,100);
+    information.setFillColor(sf::Color::White);
+    std::stringstream stream1;
+    stream1 << "Timing comparisons for 102,400 vertices";
+    information.setString(stream1.str());
+
+    // Displays DFS information
+    sf::Text DFS;
+    DFS.setFont(font);
+    DFS.setColor(sf::Color::White);
+    DFS.setCharacterSize(23);
+    DFS.setPosition(20,210);
+    DFS.setFillColor(sf::Color::White);
+    std::stringstream DFSstream;
+    DFSstream << "DFS took " << data[3] << " seconds, visited " << data[4] << " vertices, and best path is " << data[5] << " vertices in length";
+    DFS.setString(DFSstream.str());
+
+
+    // Displays DFS information
+    sf::Text BFS;
+    BFS.setFont(font);
+    BFS.setColor(sf::Color::White);
+    BFS.setCharacterSize(23);
+    BFS.setPosition(20,270);
+    BFS.setFillColor(sf::Color::White);
+    std::stringstream BFSstream;
+    BFSstream << "BFS took " << data[0] << " seconds, visited " << data[1] << " vertices, and best path is " << data[2] << " vertices in length";
+    BFS.setString(BFSstream.str());
+
+
+    // Displays Dijkstras information
+    sf::Text DIJ;
+    DIJ.setFont(font);
+    DIJ.setColor(sf::Color::White);
+    DIJ.setCharacterSize(23);
+    DIJ.setPosition(20,330);
+    DIJ.setFillColor(sf::Color::White);
+    std::stringstream DIJstream;
+    DIJstream << "Dijkstras took " << data[6] << " seconds, visited " << data[7] << " vertices, and best path is " << data[8] << " vertices in length";
+    DIJ.setString(DIJstream.str());
+
+    // Displays A* information
+    sf::Text A;
+    A.setFont(font);
+    A.setColor(sf::Color::White);
+    A.setCharacterSize(23);
+    A.setPosition(20,390);
+    A.setFillColor(sf::Color::White);
+    std::stringstream Astream;
+    Astream << "A* took " << data[9] << " seconds, visited " << data[10] << " vertices, and best path is " << data[11] << " vertices in length";
+    A.setString(Astream.str());
+
+
+    sf::Event event1;
+    while (true){
+        window.draw(screen);
+        window.draw(returnImage);
+        window.draw(text);
+        window.draw(information);
+        window.draw(DFS);
+        window.draw(BFS);
+        window.draw(DIJ);
+        window.draw(A);
+        window.display();
+
+        int xx = sf::Mouse::getPosition().x;
+        int yy = sf::Mouse::getPosition().y ;
+        returnImage.getGlobalBounds().contains(xx, yy);
+        int returnLeft = returnImage.getGlobalBounds().left;
+        int returnTop = returnImage.getGlobalBounds().top;
+        cout << yy << endl;
+        if (xx > 1310 && yy > 793 ){
+            break;
+        }
+    }
 }
