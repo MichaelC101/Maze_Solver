@@ -911,7 +911,6 @@ void Board::displayData(sf::RenderWindow& window, int size)
 }
 
 int Board::gatherSize(sf::RenderWindow& window) {
-    int size = 2;
     sf::RectangleShape screen1(sf::Vector2f(window.getSize().x, window.getSize().y));
     screen1.setFillColor(sf::Color(0, 0, 0));
     screen1.setPosition(0, 0);
@@ -921,63 +920,62 @@ int Board::gatherSize(sf::RenderWindow& window) {
     instruction.setFont(font);
     font.loadFromFile("text/mono.ttf");
     instruction.setCharacterSize(30);
-    instruction.setPosition(300, 50);
+    instruction.setPosition(175, 50);
     instruction.setFillColor(sf::Color::White);
     std::stringstream instructionstream;
-    instructionstream << "Select the length and width of maze ";
+    instructionstream << "Select the side length for a square maze in vertices";
     instruction.setString(instructionstream.str());
 
     sf::Text instruction2;
     instruction2.setFont(font);
     instruction2.setCharacterSize(30);
-    instruction2.setPosition(225, 100);
+    instruction2.setPosition(325, 100);
     instruction2.setFillColor(sf::Color::White);
     std::stringstream instructionstream2;
-    instructionstream2 << "Click Up arrow to increase and Down to decrease ";
+    instructionstream2 << "Use up and down arrows to adjust";
     instruction2.setString(instructionstream2.str());
-	
+
     sf::Text instruction3;
     instruction3.setFont(font);
     instruction3.setCharacterSize(30);
-    instruction3.setPosition(340, 150);
+    instruction3.setPosition(375, 150);
     instruction3.setFillColor(sf::Color::White);
     std::stringstream instructionstream3;
-    instructionstream3 << "Click \"Enter\" to submit input";
+    instructionstream3 << "Press \"Enter\" to submit";
     instruction3.setString(instructionstream3.str());
 
     sf::Text size1;
     size1.setFont(font);
     size1.setCharacterSize(30);
-    size1.setPosition(window.getSize().x / 2 - 30, window.getSize().y / 2 + 30);
+    size1.setPosition(window.getSize().x / 2 - 120, window.getSize().y / 2 + 30);
     size1.setFillColor(sf::Color::White);
+	sf::Text size2;
+    size2.setFont(font);
+    size2.setCharacterSize(30);
+    size2.setPosition(window.getSize().x / 2 - 220, window.getSize().y / 2 + 100);
+    size2.setFillColor(sf::Color::White);
 
-
-    while (true) {
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+    int size = 320;
+    while (!sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
             size++;
-        }
-
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && size > 2) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && size > 2)
             size--;
-        }
-        std::stringstream siz;
-        siz << size;
-        size1.setString(siz.str());
+        std::stringstream siz1;
+        siz1 << size;
+        size1.setString("Side length: " + siz1.str());
+		std::stringstream siz2;
+        siz2 << (size * size);
+        size2.setString("Total number of vertices: " + siz2.str());
 
-        window.draw(screen1);
-        window.draw(instruction);
-        window.draw(instruction2);
-	window.draw(instruction3);
+		window.draw(screen1);
+		window.draw(instruction);
+		window.draw(instruction2);
+		window.draw(instruction3);
         window.draw(size1);
+		window.draw(size2);
         window.display();
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
-            return size;
-        }
-//        if(sf::Mouse::isButtonPressed(sf::Mouse::Left)){
-//            return size;
-//        }
+		this_thread::sleep_for(std::chrono::milliseconds(10));
     }
-    //continue;
+    return size;
 }
