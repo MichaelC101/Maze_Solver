@@ -38,7 +38,7 @@ public:
 	void runDFS(sf::RenderWindow& window, int src, int end);
 	void runDijkstra(sf::RenderWindow& window, int src, int end);
 	void runAStar(sf::RenderWindow& window, int src, int end);
-	void displayData(sf::RenderWindow& window, vector<float> data);
+	void displayData(sf::RenderWindow& window);
 	unsigned int F(vector<int> d, int i);
 	void setBigBoard(int h, int w);
 	vector<float> runBigBFS();
